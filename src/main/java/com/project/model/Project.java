@@ -1,5 +1,6 @@
 package com.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -33,12 +34,14 @@ public class Project {
     private LocalDate deliveryDate;
 
     @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"project"})
     private List<Task> tasks;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "projects_students",
             joinColumns = {@JoinColumn(name = "project_id")},
             inverseJoinColumns = {@JoinColumn(name = "student_id")})
+    @JsonIgnoreProperties({"projects"})
     private Set<Student> students;
 
     public Project() {

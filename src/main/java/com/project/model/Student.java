@@ -1,5 +1,6 @@
 package com.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -35,6 +36,7 @@ public class Student {
     private Boolean fullTime;
 
     @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"students"})
     private Set<Project> projects;
 
     public Student() {
