@@ -1,0 +1,94 @@
+package com.project.model;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "projects", indexes = {@Index(name = "idx_project_name", columnList = "name")})
+public class Project {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project_id")
+    private Integer projectId;
+
+    @Column(nullable = false, length = 50)
+    private String name;
+
+    @Column(length = 1000)
+    private String description;
+
+    @CreationTimestamp
+    @Column(name = "creation_date_time", nullable = false, updatable = false)
+    private LocalDateTime creationDateTime;
+
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
+
+    public Project() {
+    }
+
+    public Project(String name) {
+        this.name = name;
+    }
+
+    public Project(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public Project(String name, LocalDate deliveryDate) {
+        this.name = name;
+        this.deliveryDate = deliveryDate;
+    }
+
+    public Project(String name, String description, LocalDate deliveryDate) {
+        this.name = name;
+        this.description = description;
+        this.deliveryDate = deliveryDate;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreationDateTime() {
+        return creationDateTime;
+    }
+
+    public void setCreationDateTime(LocalDateTime creationDateTime) {
+        this.creationDateTime = creationDateTime;
+    }
+
+    public LocalDate getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(LocalDate deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+}
