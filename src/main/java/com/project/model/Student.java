@@ -1,116 +1,28 @@
 package com.project.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
 
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "students",
-        indexes = {@Index(name = "idx_last_name", columnList = "last_name"),
-                @Index(name = "idx_index_number", columnList = "index_number", unique = true)})
-@ToString(exclude = {"projects"})
+@Table(name = "students")
 public class Student {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "student_id")
-    private Integer studentId;
-
-    @Column(name = "first_name", nullable = false, length = 50)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 100)
-    private String lastName;
-
-    @Column(name = "index_number", nullable = false, length = 20, unique = true)
-    private String indexNumber;
-
-    @Email
-    @Column(length = 50)
-    private String email;
-
-    @Column(name = "full_time", nullable = false)
-    private Boolean fullTime;
-
-    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties({"students"})
-    private Set<Project> projects;
-
-    public Student() {
-    }
-
-    public Student(String firstName, String lastName, String indexNumber, Boolean fullTime) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.indexNumber = indexNumber;
-        this.fullTime = fullTime;
-    }
-
-    public Student(String firstName, String lastName, String indexNumber, String email, Boolean fullTime) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.indexNumber = indexNumber;
-        this.email = email;
-        this.fullTime = fullTime;
-    }
-
-    public Integer getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(Integer studentId) {
-        this.studentId = studentId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getIndexNumber() {
-        return indexNumber;
-    }
-
-    public void setIndexNumber(String indexNumber) {
-        this.indexNumber = indexNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Boolean getFullTime() {
-        return fullTime;
-    }
-
-    public void setFullTime(Boolean fullTime) {
-        this.fullTime = fullTime;
-    }
-
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
+    @Id private Integer ID;
+    @NotNull private String firstName;
+    @NotNull private String lastName;
+    @Column(unique = true) private String indexNumber;
+    @Email private String email;
+    @NotNull private Boolean fullTime = Boolean.TRUE;
 }
