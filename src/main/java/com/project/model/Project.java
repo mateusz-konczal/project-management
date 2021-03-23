@@ -16,7 +16,7 @@ import java.util.Set;
 @Entity
 @Table(name = "projects")
 public class Project {
-    @Id private Integer ID;
+    @Id private Long ID;
     @Column(nullable = false, length = 50) private String name;
     @Column(length = 1000) private String description;
     @CreationTimestamp @Column(nullable = false, updatable = false) private LocalDateTime creationDateTime;

@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tasks")
 public class Task {
-    @Id private Integer ID;
+    @Id private Long ID;
+    @ManyToOne private Project project;
     @NotNull private String name;
     private Integer sequence;
     @Lob private String description;
+    @Enumerated @NotNull private TaskStatus taskStatus = TaskStatus.TO_DO;
     @CreationTimestamp @Column(nullable = false, updatable = false) private LocalDateTime additionDateTime;
-    @ManyToOne private Project project;
 }
