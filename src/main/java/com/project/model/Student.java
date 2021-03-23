@@ -1,12 +1,16 @@
 package com.project.model;
 
+import lombok.ToString;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.Set;
 
 @Entity
 @Table(name = "students",
         indexes = {@Index(name = "idx_last_name", columnList = "last_name"),
                 @Index(name = "idx_index_number", columnList = "index_number", unique = true)})
+@ToString(exclude = {"projects"})
 public class Student {
 
     @Id
@@ -29,6 +33,9 @@ public class Student {
 
     @Column(name = "full_time", nullable = false)
     private Boolean fullTime;
+
+    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
+    private Set<Project> projects;
 
     public Student() {
     }
@@ -94,6 +101,14 @@ public class Student {
 
     public void setFullTime(Boolean fullTime) {
         this.fullTime = fullTime;
+    }
+
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 
 }

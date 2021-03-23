@@ -1,13 +1,17 @@
 package com.project.model;
 
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "projects", indexes = {@Index(name = "idx_project_name", columnList = "name")})
+@ToString(exclude = {"tasks", "students"})
 public class Project {
 
     @Id
@@ -27,6 +31,15 @@ public class Project {
 
     @Column(name = "delivery_date")
     private LocalDate deliveryDate;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    private List<Task> tasks;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "projects_students",
+            joinColumns = {@JoinColumn(name = "project_id")},
+            inverseJoinColumns = {@JoinColumn(name = "student_id")})
+    private Set<Student> students;
 
     public Project() {
     }
@@ -89,6 +102,22 @@ public class Project {
 
     public void setDeliveryDate(LocalDate deliveryDate) {
         this.deliveryDate = deliveryDate;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public Set<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<Student> students) {
+        this.students = students;
     }
 
 }

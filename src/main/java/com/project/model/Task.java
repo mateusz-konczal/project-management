@@ -26,6 +26,10 @@ public class Task {
     @Column(name = "addition_date_time", nullable = false, updatable = false)
     private LocalDateTime additionDateTime;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     public Task() {
     }
 
@@ -87,6 +91,27 @@ public class Task {
 
     public void setAdditionDateTime(LocalDateTime additionDateTime) {
         this.additionDateTime = additionDateTime;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "taskId=" + taskId +
+                ", name='" + name + '\'' +
+                ", sequence=" + sequence +
+                ", description='" + description + '\'' +
+                ", additionDateTime=" + additionDateTime +
+                ", project.id=" + project.getProjectId() +
+                ", project.name=" + project.getName() +
+                '}';
     }
 
 }
