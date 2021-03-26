@@ -2,7 +2,7 @@ package com.project.services;
 
 import com.project.model.User;
 import com.project.model.UserRole;
-import com.project.repositories.UsersRepository;
+import com.project.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,42 +15,42 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j(topic = "Users service")
-public class UsersService implements UserDetailsService {
+@Slf4j(topic = "User service")
+public class UserService implements UserDetailsService {
 
-    private UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UsersService(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public Optional<User> findByUsername(String username) {
-        return usersRepository.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     public List<User> findAll() {
-        return usersRepository.findAll();
+        return userRepository.findAll();
     }
 
     public User save(User user) {
-        return usersRepository.save(user);
+        return userRepository.save(user);
     }
 
     public Optional<User> findById(Long ID) {
-        return usersRepository.findById(ID);
+        return userRepository.findById(ID);
     }
 
     public boolean existsById(Long ID) {
-        return usersRepository.existsById(ID);
+        return userRepository.existsById(ID);
     }
 
     public long count() {
-        return usersRepository.count();
+        return userRepository.count();
     }
 
     public void delete(User user) {
-        usersRepository.delete(user);
+        userRepository.delete(user);
     }
 
     @Override
