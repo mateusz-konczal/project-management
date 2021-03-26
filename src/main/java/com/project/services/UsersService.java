@@ -17,9 +17,11 @@ import java.util.Optional;
 @Service
 @Slf4j(topic = "Users service")
 public class UsersService implements UserDetailsService {
+
     private UsersRepository usersRepository;
 
-    @Autowired public UsersService(UsersRepository usersRepository) {
+    @Autowired
+    public UsersService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
@@ -51,7 +53,8 @@ public class UsersService implements UserDetailsService {
         usersRepository.delete(user);
     }
 
-    @Override public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User named '%s' not found!", username)));
     }
@@ -60,7 +63,7 @@ public class UsersService implements UserDetailsService {
     private void initializeUserIfNoUsersFound() {
         if (this.count() == 0) {
             this.save(new User(
-                    0l,
+                    0L,
                     "admin",
                     "admin",
                     null,
