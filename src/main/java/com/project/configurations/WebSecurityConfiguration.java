@@ -2,6 +2,8 @@ package com.project.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,6 +13,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -22,6 +25,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/img/**",
                         "/js/**",
                         "/vendor/**").permitAll()
+                // TODO For testing purposes
+                .antMatchers(
+                        "/api/project/**",
+                        "/api/task/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll()
@@ -34,6 +41,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler());
+
+        http.csrf().disable();
     }
 
     @Override

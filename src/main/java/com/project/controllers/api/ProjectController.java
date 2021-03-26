@@ -1,6 +1,7 @@
 package com.project.controllers.api;
 
 import com.project.model.Project;
+import com.project.model.Task;
 import com.project.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,12 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/allByStudent/{studentID}")
+    public ResponseEntity<List<Project>> findAllByStudents_ID(@PathVariable("studentID") long studentID) {
+        List<Project> allByStudentsID = projectService.findAllByStudents_ID(studentID);
+        return new ResponseEntity<>(allByStudentsID, HttpStatus.OK);
+    }
+
     @PostMapping()
     public ResponseEntity<Project> create(@RequestBody Project project) {
         project = projectService.create(project);
@@ -58,6 +65,12 @@ public class ProjectController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") long id) {
+        projectService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

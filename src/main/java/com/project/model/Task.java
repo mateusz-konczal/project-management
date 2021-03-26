@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,9 +22,6 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @ManyToOne
-    private Project project;
-
     @NotNull
     private String name;
 
@@ -38,4 +37,16 @@ public class Task {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime additionDateTime;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Project project;
+
+    public Task(@NotNull String name, Integer sequence, String description, TaskStatus taskStatus) {
+        this.name = name;
+        this.sequence = sequence;
+        this.description = description;
+        this.taskStatus = taskStatus;
+    }
 }

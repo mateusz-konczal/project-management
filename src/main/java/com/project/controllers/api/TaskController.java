@@ -38,6 +38,12 @@ public class TaskController {
         }
     }
 
+    @GetMapping("/allByProject/{projectID}")
+    public ResponseEntity<List<Task>> findAllByProjectID(@PathVariable("projectID") long projectID) {
+        List<Task> allByProjectID = taskService.findAllByProjectID(projectID);
+        return new ResponseEntity<>(allByProjectID, HttpStatus.OK);
+    }
+
     @PostMapping()
     public ResponseEntity<Task> create(@RequestBody Task task) {
         task = taskService.create(task);
@@ -58,6 +64,12 @@ public class TaskController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") long id) {
+        taskService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

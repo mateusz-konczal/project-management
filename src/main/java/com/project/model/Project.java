@@ -35,4 +35,10 @@ public class Project {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Student> students;
+
+    public Project(String name, String description, LocalDate deliveryDate) {
+        this.name = name;
+        this.description = description;
+        this.deliveryDate = deliveryDate;
+    }
 }

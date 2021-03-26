@@ -28,6 +28,10 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public List<Task> findAllByProjectID(Long projectID) {
+        return taskRepository.findAllByProjectID(projectID);
+    }
+
     public Task create(Task task) {
         return taskRepository.save(task);
     }
@@ -46,5 +50,11 @@ public class TaskService {
 
     public void delete(Task task) {
         taskRepository.delete(task);
+    }
+
+    public void deleteById(Long id) {
+        if (existsById(id)) {
+            taskRepository.deleteById(id);
+        }
     }
 }

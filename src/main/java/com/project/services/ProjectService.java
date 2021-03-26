@@ -28,6 +28,10 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
+    public List<Project> findAllByStudents_ID(Long studentID) {
+        return projectRepository.findAllByStudents_ID(studentID);
+    }
+
     public Project create(Project project) {
         return projectRepository.save(project);
     }
@@ -46,5 +50,11 @@ public class ProjectService {
 
     public void delete(Project project) {
         projectRepository.delete(project);
+    }
+
+    public void deleteById(Long id) {
+        if (existsById(id)) {
+            projectRepository.deleteById(id);
+        }
     }
 }
