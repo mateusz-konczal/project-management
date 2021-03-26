@@ -16,10 +16,23 @@ import java.util.Set;
 @Entity
 @Table(name = "projects")
 public class Project {
-    @Id private Long ID;
-    @Column(nullable = false, length = 50) private String name;
-    @Column(length = 1000) private String description;
-    @CreationTimestamp @Column(nullable = false, updatable = false) private LocalDateTime creationDateTime;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ID;
+
+    @Column(nullable = false, length = 50)
+    private String name;
+
+    @Column(length = 1000)
+    private String description;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime creationDateTime;
+
     private LocalDate deliveryDate;
-    @ManyToMany(fetch = FetchType.EAGER) private Set<Student> students;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Student> students;
 }

@@ -9,7 +9,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 //@Configuration
 //@EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Override protected void configure(HttpSecurity http) throws Exception {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers(
@@ -37,7 +39,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler());
     }
 
-    @Bean AccessDeniedHandler accessDeniedHandler() {
+    @Bean
+    AccessDeniedHandler accessDeniedHandler() {
         return new FrontendAccessDeniedHandler();
     }
 }

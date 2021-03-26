@@ -19,29 +19,47 @@ import java.util.Collection;
 public class User implements UserDetails {
     private static final PasswordEncoder PASSWORD_ENCODER = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    @Id private Long ID;
-    @NotNull @Column(unique = true) private String username;
-    @NotNull private String password;
-    @Email private String email;
-    @Enumerated @NotNull private UserRole userRole;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ID;
 
-    @Override public Collection<? extends GrantedAuthority> getAuthorities() {
+    @NotNull
+    @Column(unique = true)
+    private String username;
+
+    @NotNull
+    private String password;
+
+    @Email
+    @Column(unique = true)
+    private String email;
+
+    @Enumerated
+    @NotNull
+    private UserRole userRole;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return userRole.getAuthorities();
     }
 
-    @Override public boolean isAccountNonExpired() {
+    @Override
+    public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override public boolean isAccountNonLocked() {
+    @Override
+    public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override public boolean isCredentialsNonExpired() {
+    @Override
+    public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override public boolean isEnabled() {
+    @Override
+    public boolean isEnabled() {
         return true;
     }
 
