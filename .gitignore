@@ -135,3 +135,9 @@ hs_err_pid*
 src/main/resources/application.properties
 
 *.iml
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.idea
