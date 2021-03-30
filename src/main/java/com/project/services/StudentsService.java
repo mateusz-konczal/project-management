@@ -1,7 +1,7 @@
 package com.project.services;
 
 import com.project.model.Student;
-import com.project.repositories.StudentRepository;
+import com.project.repositories.StudentsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,42 +10,42 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j(topic = "Student service")
-public class StudentService {
+@Slf4j(topic = "Students service")
+public class StudentsService {
 
-    private final StudentRepository studentRepository;
+    private final StudentsRepository studentsRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public StudentsService(StudentsRepository studentsRepository) {
+        this.studentsRepository = studentsRepository;
     }
 
     public List<Student> findAll() {
-        return studentRepository.findAll();
+        return studentsRepository.findAll();
     }
 
     public Optional<Student> findById(Long ID) {
-        return studentRepository.findById(ID);
+        return studentsRepository.findById(ID);
     }
 
     public Student save(Student student) {
-        return studentRepository.save(student);
+        return studentsRepository.save(student);
     }
 
     public List<Student> saveAll(Iterable<Student> students) {
-        return studentRepository.saveAll(students);
+        return studentsRepository.saveAll(students);
     }
 
     public boolean existsById(Long ID) {
-        return studentRepository.existsById(ID);
+        return studentsRepository.existsById(ID);
     }
 
     public long count() {
-        return studentRepository.count();
+        return studentsRepository.count();
     }
 
     public void delete(Student student) {
-        studentRepository.delete(student);
+        studentsRepository.delete(student);
     }
 
 }
