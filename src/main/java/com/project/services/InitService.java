@@ -19,15 +19,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j(topic = "Init service")
 public class InitService {
 
-    private final ProjectService projectService;
-    private final TaskService taskService;
-    private final StudentService studentService;
+    private final ProjectsService projectsService;
+    private final TasksService tasksService;
+    private final StudentsService studentsService;
 
     @Autowired
-    public InitService(ProjectService projectService, TaskService taskService, StudentService studentService) {
-        this.projectService = projectService;
-        this.taskService = taskService;
-        this.studentService = studentService;
+    public InitService(ProjectsService projectsService, TasksService tasksService, StudentsService studentsService) {
+        this.projectsService = projectsService;
+        this.tasksService = tasksService;
+        this.studentsService = studentsService;
     }
 
     @PostConstruct
@@ -45,17 +45,17 @@ public class InitService {
 
         Lorem lorem = LoremIpsum.getInstance();
 
-        Student s1 = new Student(0L, "John", "Smith", "100000", "Smith@example.com", true);
-        Student s2 = new Student(0L, "Lara", "Baxter", "100001", "Baxter@example.com", true);
-        Student s3 = new Student(0L, "Alex", "Tyson", "100002", "Tyson@example.com", true);
-        Student s4 = new Student(0L, "Sam", "Wright", "100004", "Wright@example.com", false);
-        Student s5 = new Student(0L, "Charlotte", "Marshall", "100005", "Marshall@example.com", true);
-        Student s6 = new Student(0L, "William", "Barker", "100006", "Barker@example.com", true);
-        Student s7 = new Student(0L, "Lucas", "Wolfe", "100007", "Wolfe@example.com", false);
-        Student s8 = new Student(0L, "Oliver", "Harvey", "100008", "Harvey@example.com", true);
-        Student s9 = new Student(0L, "Emma", "Simon", "100009", "Simon@example.com", false);
-        Student s10 = new Student(0L, "Benjamin", "Bourn", "100010", "Bourn@example.com", true);
-        List<Student> allStudents = studentService.saveAll(Arrays.asList(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10));
+        Student s1 = new Student(0L, "jsmith", "password", "Smith", "John", "Smith@example.com", "100000", true);
+        Student s2 = new Student(0L, "lbaxter", "password", "Baxter", "Lara", "Baxter@example.com", "100001", true);
+        Student s3 = new Student(0L, "atyson", "password", "Tyson", "Alex", "Tyson@example.com", "100002", true);
+        Student s4 = new Student(0L, "swright", "password", "Wright", "Sam", "Wright@example.com", "100004", false);
+        Student s5 = new Student(0L, "cmarshall", "password", "Marshall", "Charlotte", "Marshall@example.com", "100005", true);
+        Student s6 = new Student(0L, "wbarker", "password", "Barker", "William", "Barker@example.com", "100006", true);
+        Student s7 = new Student(0L, "lwolfe", "password", "Wolfe", "Lucas", "Wolfe@example.com", "100007", false);
+        Student s8 = new Student(0L, "oharvey", "password", "Harvey", "Oliver", "Harvey@example.com", "100008", true);
+        Student s9 = new Student(0L, "esimson", "password", "Simon", "Emma", "Simon@example.com", "100009", false);
+        Student s10 = new Student(0L, "bbourn", "password", "Bourn", "Benjamin", "Bourn@example.com", "100010", true);
+        List<Student> allStudents = studentsService.saveAll(Arrays.asList(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10));
 
         for (int i = 0; i < PROJECT_NUMBER; i++) {
             String name = lorem.getTitle(2, 4);
@@ -79,7 +79,7 @@ public class InitService {
 
             Project project = new Project(name, description, deliveryLocalDate);
             project.setStudents(studentsInProjectSet);
-            project = projectService.create(project);
+            project = projectsService.create(project);
 
             int tasksInProject = ThreadLocalRandom.current()
                     .nextInt(MIN_TASKS_IN_PROJECT, MAX_TASKS_IN_PROJECT + 1);
@@ -90,7 +90,7 @@ public class InitService {
 
                 Task t = new Task(taskName, k + 1, taskDescription, taskStatus);
                 t.setProject(project);
-                taskService.create(t);
+                tasksService.create(t);
             }
         }
 

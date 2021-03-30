@@ -1,8 +1,7 @@
 package com.project.controllers.api;
 
 import com.project.model.Project;
-import com.project.model.Task;
-import com.project.services.ProjectService;
+import com.project.services.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,22 +14,22 @@ import java.util.Optional;
 @RequestMapping("/api/project")
 @CrossOrigin
 public class ProjectController {
-    private final ProjectService projectService;
+    private final ProjectsService projectsService;
 
     @Autowired
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
+    public ProjectController(ProjectsService projectsService) {
+        this.projectsService = projectsService;
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Project>> findAllProjects() {
-        List<Project> allProjects = projectService.findAll();
+        List<Project> allProjects = projectsService.findAll();
         return new ResponseEntity<>(allProjects, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Project> findById(@PathVariable("id") long id) {
-        Optional<Project> project = projectService.findById(id);
+        Optional<Project> project = projectsService.findById(id);
 
         if (project.isPresent()) {
             return new ResponseEntity<>(project.get(), HttpStatus.OK);
@@ -41,13 +40,13 @@ public class ProjectController {
 
     @GetMapping("/allByStudent/{studentID}")
     public ResponseEntity<List<Project>> findAllByStudents_ID(@PathVariable("studentID") long studentID) {
-        List<Project> allByStudentsID = projectService.findAllByStudents_ID(studentID);
+        List<Project> allByStudentsID = projectsService.findAllByStudents_ID(studentID);
         return new ResponseEntity<>(allByStudentsID, HttpStatus.OK);
     }
 
     @PostMapping()
     public ResponseEntity<Project> create(@RequestBody Project project) {
-        project = projectService.create(project);
+        project = projectsService.create(project);
 
         if (project != null) {
             return new ResponseEntity<>(project, HttpStatus.CREATED);
@@ -58,7 +57,7 @@ public class ProjectController {
 
     @PutMapping()
     public ResponseEntity<Project> update(@RequestBody Project project) {
-        project = projectService.update(project);
+        project = projectsService.update(project);
 
         if (project != null) {
             return new ResponseEntity<>(project, HttpStatus.OK);
@@ -69,7 +68,7 @@ public class ProjectController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable("id") long id) {
-        projectService.deleteById(id);
+        projectsService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 

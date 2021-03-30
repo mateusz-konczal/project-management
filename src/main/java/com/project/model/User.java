@@ -16,6 +16,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails {
     private static final PasswordEncoder PASSWORD_ENCODER = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -30,16 +31,32 @@ public class User implements UserDetails {
     @NotNull
     private String password;
 
-    @Email
-    @Column(unique = true)
-    private String email;
-
     @Enumerated
     @NotNull
     private UserRole userRole;
 
+    @NotNull
+    protected String lastName;
+
+    @NotNull
+    protected String firstName;
+
+    @Email
+    @Column(unique = true)
+    protected String email;
+
+    public User(Long ID, String username, String password, UserRole userRole, String lastName, String firstName, String email) {
+        this.ID = ID;
+        this.username = username;
+        this.password = password;
+        this.userRole = userRole;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.email = email;
+    }
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public final Collection<? extends GrantedAuthority> getAuthorities() {
         return userRole.getAuthorities();
     }
 
@@ -49,29 +66,21 @@ public class User implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonLocked() {
+    public final boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
-    public boolean isCredentialsNonExpired() {
+    public final boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return true;
     }
 
     public void setPassword(String password) {
         this.password = PASSWORD_ENCODER.encode(password);
-    }
-
-    public User(Long ID, String username, String password, String email, UserRole userRole) {
-        this.ID = ID;
-        this.username = username;
-        this.password = PASSWORD_ENCODER.encode(password);
-        this.email = email;
-        this.userRole = userRole;
     }
 }

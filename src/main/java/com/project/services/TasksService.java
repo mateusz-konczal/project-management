@@ -1,7 +1,7 @@
 package com.project.services;
 
 import com.project.model.Task;
-import com.project.repositories.TaskRepository;
+import com.project.repositories.TasksRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,51 +10,51 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j(topic = "Task service")
-public class TaskService {
+@Slf4j(topic = "Tasks service")
+public class TasksService {
 
-    private final TaskRepository taskRepository;
+    private final TasksRepository tasksRepository;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TasksService(TasksRepository tasksRepository) {
+        this.tasksRepository = tasksRepository;
     }
 
     public Optional<Task> findById(Long ID) {
-        return taskRepository.findById(ID);
+        return tasksRepository.findById(ID);
     }
 
     public List<Task> findAll() {
-        return taskRepository.findAll();
+        return tasksRepository.findAll();
     }
 
     public List<Task> findAllByProjectID(Long projectID) {
-        return taskRepository.findAllByProjectID(projectID);
+        return tasksRepository.findAllByProjectID(projectID);
     }
 
     public Task create(Task task) {
-        return taskRepository.save(task);
+        return tasksRepository.save(task);
     }
 
     public Task update(Task task) {
-        return taskRepository.save(task);
+        return tasksRepository.save(task);
     }
 
     public boolean existsById(Long ID) {
-        return taskRepository.existsById(ID);
+        return tasksRepository.existsById(ID);
     }
 
     public long count() {
-        return taskRepository.count();
+        return tasksRepository.count();
     }
 
     public void delete(Task task) {
-        taskRepository.delete(task);
+        tasksRepository.delete(task);
     }
 
     public void deleteById(Long id) {
         if (existsById(id)) {
-            taskRepository.deleteById(id);
+            tasksRepository.deleteById(id);
         }
     }
 }
