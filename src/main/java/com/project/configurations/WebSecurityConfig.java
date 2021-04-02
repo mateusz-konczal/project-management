@@ -1,8 +1,12 @@
 package com.project.configurations;
 
+import com.project.services.UsersService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -14,7 +18,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UsersService usersService;
+
+    @Autowired
+    public WebSecurityConfig(UsersService usersService) {
+        this.usersService = usersService;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -30,7 +41,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/project/**",
                         "/api/task/**",
                         "/api/user/**",
-                        "/api/student/**").permitAll()
+                        "/api/student/**",
+                        "/api/lecturer/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll()
@@ -62,4 +74,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     AccessDeniedHandler accessDeniedHandler() {
         return new FrontendAccessDeniedHandler();
     }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(usersService);
+    }
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
 }

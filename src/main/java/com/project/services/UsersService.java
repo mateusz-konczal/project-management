@@ -1,6 +1,6 @@
 package com.project.services;
 
-import com.project.model.Task;
+import com.project.model.Lecturer;
 import com.project.model.User;
 import com.project.repositories.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +19,12 @@ import java.util.Optional;
 public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UsersService(UsersRepository usersRepository) {
+    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -33,11 +36,20 @@ public class UsersService implements UserDetailsService {
     }
 
     public User create(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return usersRepository.save(user);
     }
 
     public User update(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return usersRepository.save(user);
+    }
+
+    public List<User> saveAll(Iterable<User> users) {
+        for (User user : users) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        return usersRepository.saveAll(users);
     }
 
     public Optional<User> findById(Long ID) {
