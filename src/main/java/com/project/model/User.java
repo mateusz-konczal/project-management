@@ -19,7 +19,6 @@ import java.util.Collection;
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Configurable
 public class User implements UserDetails {
 
     @Id
