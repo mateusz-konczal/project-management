@@ -60,10 +60,15 @@ public class StudentsService {
     public void deleteById(Long id) {
         if (existsById(id)) {
             List<Project> projects = projectsRepository.findAllByStudents_ID(id).stream()
-                    .peek(project -> project.setStudents(project.getStudents()
-                            .stream()
-                            .filter(student -> !student.getID().equals(id))
-                            .collect(Collectors.toSet())))
+                    .map((Project project) -> {
+                                project.setStudents(project.getStudents()
+                                        .stream()
+                                        .filter(student -> !student.getID().equals(id))
+                                        .collect(Collectors.toSet())
+                                );
+                                return project;
+                            }
+                    )
                     .collect(Collectors.toList());
             projectsRepository.saveAll(projects);
 
