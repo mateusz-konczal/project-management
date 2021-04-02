@@ -1,6 +1,8 @@
 package com.project.services;
 
 import com.project.model.Lecturer;
+import com.project.model.Project;
+import com.project.model.Student;
 import com.project.repositories.LecturersRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j(topic = "Lecturers service")
@@ -27,7 +30,11 @@ public class LecturersService {
         return lecturersRepository.findById(ID);
     }
 
-    public Lecturer save(Lecturer lecturer) {
+    public Lecturer create(Lecturer lecturer) {
+        return lecturersRepository.save(lecturer);
+    }
+
+    public Lecturer update(Lecturer lecturer) {
         return lecturersRepository.save(lecturer);
     }
 
@@ -45,5 +52,11 @@ public class LecturersService {
 
     public void delete(Lecturer lecturer) {
         lecturersRepository.delete(lecturer);
+    }
+
+    public void deleteById(Long id) {
+        if (existsById(id)) {
+            lecturersRepository.deleteById(id);
+        }
     }
 }
