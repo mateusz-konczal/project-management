@@ -28,7 +28,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // TODO For testing purposes
                 .antMatchers(
                         "/api/project/**",
-                        "/api/task/**").permitAll()
+                        "/api/task/**",
+                        "/api/user/**",
+                        "/api/student/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll()

@@ -13,11 +13,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/task")
 @CrossOrigin
-public class TaskController {
+public class TasksController {
     private final TasksService tasksService;
 
     @Autowired
-    public TaskController(TasksService tasksService) {
+    public TasksController(TasksService tasksService) {
         this.tasksService = tasksService;
     }
 

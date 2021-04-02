@@ -13,11 +13,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/project")
 @CrossOrigin
-public class ProjectController {
+public class ProjectsController {
     private final ProjectsService projectsService;
 
     @Autowired
-    public ProjectController(ProjectsService projectsService) {
+    public ProjectsController(ProjectsService projectsService) {
         this.projectsService = projectsService;
     }
 

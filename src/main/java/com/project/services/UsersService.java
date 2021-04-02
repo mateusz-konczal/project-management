@@ -1,5 +1,6 @@
 package com.project.services;
 
+import com.project.model.Task;
 import com.project.model.User;
 import com.project.repositories.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,11 @@ public class UsersService implements UserDetailsService {
         return usersRepository.findAll();
     }
 
-    public User save(User user) {
+    public User create(User user) {
+        return usersRepository.save(user);
+    }
+
+    public User update(User user) {
         return usersRepository.save(user);
     }
 
@@ -41,6 +46,10 @@ public class UsersService implements UserDetailsService {
 
     public boolean existsById(Long ID) {
         return usersRepository.existsById(ID);
+    }
+
+    public Boolean existsByEmail(String email) {
+        return usersRepository.existsByEmail(email);
     }
 
     public long count() {
