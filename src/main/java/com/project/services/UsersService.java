@@ -1,6 +1,5 @@
 package com.project.services;
 
-import com.project.model.Lecturer;
 import com.project.model.User;
 import com.project.repositories.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
