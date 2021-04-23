@@ -35,7 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/css/**",
                         "/img/**",
                         "/js/**",
-                        "/vendor/**").permitAll()
+                        "/vendor/**",
+                        "/signup/**").permitAll()
                 // TODO For testing purposes
                 .antMatchers(
                         "/api/project/**",
@@ -45,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/lecturer/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().permitAll()
+                .formLogin().loginPage("/login").permitAll()
                 .and()
                 .logout()
                 .invalidateHttpSession(true)

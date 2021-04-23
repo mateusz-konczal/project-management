@@ -3,6 +3,7 @@ package com.project.services;
 import com.project.model.User;
 import com.project.repositories.UsersRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.passay.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +65,10 @@ public class UsersService implements UserDetailsService {
         return usersRepository.existsByEmail(email);
     }
 
+    public Boolean existsByUsername(String username) {
+        return usersRepository.existsByUsername(username);
+    }
+
     public long count() {
         return usersRepository.count();
     }
@@ -77,17 +83,22 @@ public class UsersService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User named '%s' not found!", username)));
     }
 
-//    @PostConstruct
-//    private void initializeUserIfNoUsersFound() {
-//        if (this.count() == 0) {
-//            this.save(new User(
-//                    0L,
-//                    "admin",
-//                    "admin",
-//                    null,
-//                    UserRole.LECTURER
-//            ));
-//            log.warn("Initial user \"admin\" with password \"admin\" was created due to no users available in database");
-//        }
-//    }
+    public boolean validatePassword(String password) {
+        PasswordValidator passwordValidator = new PasswordValidator(Arrays.asList(
+                new LengthRule(6, 20),
+                new CharacterRule(EnglishCharacterData.UpperCase, 1),
+                new CharacterRule(EnglishCharacterData.LowerCase, 1),
+                new CharacterRule(EnglishCharacterData.Digit, 1),
+                new WhitespaceRule()));
+
+        PasswordData passwordData = new PasswordData(password);
+        RuleResult result = passwordValidator.validate(passwordData);
+
+        if (!result.isValid()) {
+            log.info("Invalid Password: " + passwordValidator.getMessages(result));
+        }
+
+        return result.isValid();
+    }
+
 }
