@@ -2,16 +2,13 @@ package com.project.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 
 @Data
@@ -37,10 +34,12 @@ public class User implements UserDetails {
     private UserRole userRole;
 
     @NotNull
-    protected String lastName;
+    @Size(min = 3, message = "First name must contain at least 3 characters.")
+    protected String firstName;
 
     @NotNull
-    protected String firstName;
+    @Size(min = 3, message = "Last name must contain at least 3 characters.")
+    protected String lastName;
 
     @Email
     @Column(unique = true)

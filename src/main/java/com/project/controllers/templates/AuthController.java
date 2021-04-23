@@ -2,13 +2,13 @@ package com.project.controllers.templates;
 
 import com.project.model.Lecturer;
 import com.project.model.Student;
-import com.project.model.UserRole;
 import com.project.services.LecturersService;
 import com.project.services.StudentsService;
 import com.project.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -53,7 +53,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup/student")
-    public String postStudentSignup(@ModelAttribute @Valid Student student, Errors errors) {
+    public String postStudentSignup(@Valid @ModelAttribute Student student, BindingResult result, Errors errors) {
+        if (result.hasErrors()) {
+            return "auth/student-signup";
+        }
         if (usersService.existsByUsername(student.getUsername())) {
             errors.rejectValue("username", "username.exists", "Username already exists.");
             return "auth/student-signup";
@@ -68,7 +71,6 @@ public class AuthController {
             return "auth/student-signup";
         }
 
-        student.setUserRole(UserRole.STUDENT);
         studentsService.create(student);
         return "redirect:/login";
     }
@@ -80,7 +82,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup/lecturer")
-    public String postLecturerSignup(@ModelAttribute @Valid Lecturer lecturer, Errors errors) {
+    public String postLecturerSignup(@Valid @ModelAttribute Lecturer lecturer, BindingResult result, Errors errors) {
+        if (result.hasErrors()) {
+            return "auth/lecturer-signup";
+        }
         if (usersService.existsByUsername(lecturer.getUsername())) {
             errors.rejectValue("username", "username.exists", "Username already exists.");
             return "auth/lecturer-signup";
@@ -95,7 +100,6 @@ public class AuthController {
             return "auth/lecturer-signup";
         }
 
-        lecturer.setUserRole(UserRole.LECTURER);
         lecturersService.create(lecturer);
         return "redirect:/login";
     }
