@@ -7,20 +7,20 @@ import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "students")
+@Table(name = "students", indexes = {@Index(name = "idx_index_number", columnList = "index_number")})
 public class Student extends User {
-    @Column(unique = true)
+    @Column(name = "index_number", nullable = false, length = 20, unique = true)
     private String indexNumber;
 
-    @NotNull
+    @Column(name = "full_time", nullable = false)
     private Boolean fullTime = Boolean.TRUE;
 
     public Student(Long ID, String username, String password, String lastName, String firstName, String email, String indexNumber, Boolean fullTime) {
@@ -28,7 +28,6 @@ public class Student extends User {
         this.indexNumber = indexNumber;
         this.fullTime = fullTime;
     }
-
 }
 
 

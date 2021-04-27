@@ -5,9 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Data
 @ToString(callSuper = true)
@@ -16,6 +16,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "lecturers")
 public class Lecturer extends User {
-    @NotNull
+    @Column(name = "academic_title", nullable = false)
     private String academicTitle;
 }

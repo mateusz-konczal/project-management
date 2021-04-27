@@ -8,21 +8,19 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tasks")
+@Table(name = "tasks", indexes = {@Index(name = "idx_task_name", columnList = "name")})
 public class Task {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @NotNull
+    @Column(nullable = false, length = 50)
     private String name;
 
     private Integer sequence;
@@ -31,11 +29,11 @@ public class Task {
     private String description;
 
     @Enumerated
-    @NotNull
+    @Column(name = "task_status", nullable = false)
     private TaskStatus taskStatus = TaskStatus.TO_DO;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(name = "addition_date_time", nullable = false, updatable = false)
     private LocalDateTime additionDateTime;
 
     @ManyToOne
@@ -43,7 +41,7 @@ public class Task {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
 
-    public Task(@NotNull String name, Integer sequence, String description, TaskStatus taskStatus) {
+    public Task(String name, Integer sequence, String description, TaskStatus taskStatus) {
         this.name = name;
         this.sequence = sequence;
         this.description = description;
