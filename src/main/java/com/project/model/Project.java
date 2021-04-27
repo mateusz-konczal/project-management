@@ -1,5 +1,6 @@
 package com.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,13 +9,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "projects")
+@Table(name = "projects", indexes = {@Index(name = "idx_project_name", columnList = "name")})
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,10 +29,15 @@ public class Project {
     private String description;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(name = "creation_date_time", nullable = false, updatable = false)
     private LocalDateTime creationDateTime;
 
+    @Column(name = "delivery_date")
     private LocalDate deliveryDate;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"project"})
+    private List<Task> tasks;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Student> students;

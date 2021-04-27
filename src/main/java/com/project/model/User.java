@@ -14,31 +14,29 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {@Index(name = "idx_last_name", columnList = "last_name")})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @NotNull
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @NotNull
     private String password;
 
     @Enumerated
-    @NotNull
+    @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 
-    @NotNull
-    @Size(min = 3, message = "First name must contain at least 3 characters.")
+    @Size(min = 3, message = "First name must contain at least {min} characters.")
+    @Column(name = "first_name", nullable = false, length = 50)
     protected String firstName;
 
-    @NotNull
-    @Size(min = 3, message = "Last name must contain at least 3 characters.")
+    @Size(min = 3, message = "Last name must contain at least {min} characters.")
+    @Column(name = "last_name", nullable = false, length = 100)
     protected String lastName;
 
     @Email
@@ -79,5 +77,4 @@ public class User implements UserDetails {
     public final boolean isEnabled() {
         return true;
     }
-
 }
