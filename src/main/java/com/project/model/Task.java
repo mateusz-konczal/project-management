@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "tasks", indexes = {@Index(name = "idx_task_name", columnList = "name")})
-public class Task {
+public class Task extends RepresentationModel<Task> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;

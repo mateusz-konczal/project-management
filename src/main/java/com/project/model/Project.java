@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "projects", indexes = {@Index(name = "idx_project_name", columnList = "name")})
-public class Project {
+public class Project extends RepresentationModel<Project> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
