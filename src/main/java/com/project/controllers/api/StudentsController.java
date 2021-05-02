@@ -3,6 +3,8 @@ package com.project.controllers.api;
 import com.project.model.Student;
 import com.project.services.StudentsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,21 +25,22 @@ public class StudentsController {
         this.studentsService = studentsService;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Student>> findAllStudents() {
+    @GetMapping()
+    public ResponseEntity<CollectionModel<Student>> findAllStudents() {
         List<Student> allStudents = studentsService.findAll();
-        return new ResponseEntity<>(allStudents, HttpStatus.OK);
+        allStudents.forEach(student -> student.addIf(!student.hasLinks(),
+                () -> getLinkToStudent(student)));
+        Link link = linkTo(StudentsController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allStudents, link));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> findById(@PathVariable("id") long id) {
-        Optional<Student> student = studentsService.findById(id);
-
-        if (student.isPresent()) {
-            return new ResponseEntity<>(student.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<Student> optionalStudent = studentsService.findById(id);
+        return optionalStudent.map(student -> {
+            student.add(getLinkToStudent(student));
+            return new ResponseEntity<>(student, HttpStatus.OK);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping()
@@ -68,4 +71,7 @@ public class StudentsController {
         return ResponseEntity.noContent().build();
     }
 
+    private Link getLinkToStudent(Student student) {
+        return linkTo(StudentsController.class).slash(student.getID()).withSelfRel();
+    }
 }

@@ -27,27 +27,31 @@ public class TasksController {
         this.tasksService = tasksService;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Task>> findAllTasks() {
+    @GetMapping()
+    public ResponseEntity<CollectionModel<Task>> findAllTasks() {
         List<Task> allTasks = tasksService.findAll();
-        return new ResponseEntity<>(allTasks, HttpStatus.OK);
+        allTasks.forEach(task -> task.addIf(!task.hasLinks(),
+                () -> getLinkToTask(task)));
+        Link link = linkTo(TasksController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allTasks, link));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> findById(@PathVariable("id") long id) {
-        Optional<Task> task = tasksService.findById(id);
-
-        if (task.isPresent()) {
-            return new ResponseEntity<>(task.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<Task> optionalTask = tasksService.findById(id);
+        return optionalTask.map(task -> {
+            task.add(getLinkToTask(task));
+            return new ResponseEntity<>(task, HttpStatus.OK);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/allByProject/{projectID}")
-    public ResponseEntity<List<Task>> findAllByProjectID(@PathVariable("projectID") long projectID) {
+    public ResponseEntity<CollectionModel<Task>> findAllByProjectID(@PathVariable("projectID") long projectID) {
         List<Task> allByProjectID = tasksService.findAllByProjectID(projectID);
-        return new ResponseEntity<>(allByProjectID, HttpStatus.OK);
+        allByProjectID.forEach(task -> task.addIf(!task.hasLinks(),
+                () -> getLinkToTask(task)));
+        Link link = linkTo(TasksController.class).withRel("All tasks");
+        return ResponseEntity.ok(CollectionModel.of(allByProjectID, link));
     }
 
     @PostMapping()
@@ -78,4 +82,20 @@ public class TasksController {
         return ResponseEntity.noContent().build();
     }
 
+    private Link getLinkToTask(Task task) {
+        addLinkToProject(task);
+        addLinksToStudents(task);
+        return linkTo(TasksController.class).slash(task.getID()).withSelfRel();
+    }
+
+    private void addLinkToProject(Task task) {
+        task.getProject().addIf(!task.getProject().hasLinks(),
+                () -> linkTo(ProjectsController.class).slash(task.getProject().getID()).withSelfRel());
+    }
+
+    private void addLinksToStudents(Task task) {
+        Set<Student> students = task.getProject().getStudents();
+        students.forEach(student -> student.addIf(!student.hasLinks(),
+                () -> linkTo(StudentsController.class).slash(student.getID()).withSelfRel()));
+    }
 }

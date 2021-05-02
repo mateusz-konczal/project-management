@@ -3,6 +3,8 @@ package com.project.controllers.api;
 import com.project.model.Lecturer;
 import com.project.services.LecturersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,21 +25,22 @@ public class LecturersController {
         this.lecturersService = lecturersService;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Lecturer>> findAllLecturers() {
+    @GetMapping()
+    public ResponseEntity<CollectionModel<Lecturer>> findAllLecturers() {
         List<Lecturer> allLecturers = lecturersService.findAll();
-        return new ResponseEntity<>(allLecturers, HttpStatus.OK);
+        allLecturers.forEach(lecturer -> lecturer.addIf(!lecturer.hasLinks(),
+                () -> getLinkToLecturer(lecturer)));
+        Link link = linkTo(LecturersController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allLecturers, link));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Lecturer> findById(@PathVariable("id") long id) {
-        Optional<Lecturer> lecturer = lecturersService.findById(id);
-
-        if (lecturer.isPresent()) {
-            return new ResponseEntity<>(lecturer.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<Lecturer> optionalLecturer = lecturersService.findById(id);
+        return optionalLecturer.map(lecturer -> {
+            lecturer.add(getLinkToLecturer(lecturer));
+            return new ResponseEntity<>(lecturer, HttpStatus.OK);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping()
@@ -68,4 +71,7 @@ public class LecturersController {
         return ResponseEntity.noContent().build();
     }
 
+    private Link getLinkToLecturer(Lecturer lecturer) {
+        return linkTo(LecturersController.class).slash(lecturer.getID()).withSelfRel();
+    }
 }
