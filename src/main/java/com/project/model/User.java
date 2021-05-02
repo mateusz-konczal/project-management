@@ -2,6 +2,7 @@ package com.project.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,7 +17,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "users", indexes = {@Index(name = "idx_last_name", columnList = "last_name")})
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User implements UserDetails {
+public class User extends RepresentationModel<User> implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;

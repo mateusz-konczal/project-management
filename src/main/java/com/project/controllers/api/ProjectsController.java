@@ -3,6 +3,8 @@ package com.project.controllers.api;
 import com.project.model.Project;
 import com.project.services.ProjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 @RestController
-@RequestMapping("/api/project")
+@RequestMapping("/api/projects")
 @CrossOrigin
 public class ProjectsController {
     private final ProjectsService projectsService;
@@ -21,27 +25,31 @@ public class ProjectsController {
         this.projectsService = projectsService;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Project>> findAllProjects() {
+    @GetMapping()
+    public ResponseEntity<CollectionModel<Project>> findAllProjects() {
         List<Project> allProjects = projectsService.findAll();
-        return new ResponseEntity<>(allProjects, HttpStatus.OK);
+        allProjects.forEach(project -> project.addIf(!project.hasLinks(),
+                () -> getLinkToProject(project)));
+        Link link = linkTo(ProjectsController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allProjects, link));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Project> findById(@PathVariable("id") long id) {
-        Optional<Project> project = projectsService.findById(id);
-
-        if (project.isPresent()) {
-            return new ResponseEntity<>(project.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<Project> optionalProject = projectsService.findById(id);
+        return optionalProject.map(project -> {
+            project.add(getLinkToProject(project));
+            return new ResponseEntity<>(project, HttpStatus.OK);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/allByStudent/{studentID}")
-    public ResponseEntity<List<Project>> findAllByStudents_ID(@PathVariable("studentID") long studentID) {
+    public ResponseEntity<CollectionModel<Project>> findAllByStudents_ID(@PathVariable("studentID") long studentID) {
         List<Project> allByStudentsID = projectsService.findAllByStudents_ID(studentID);
-        return new ResponseEntity<>(allByStudentsID, HttpStatus.OK);
+        allByStudentsID.forEach(project -> project.addIf(!project.hasLinks(),
+                () -> getLinkToProject(project)));
+        Link link = linkTo(ProjectsController.class).withRel("All projects");
+        return ResponseEntity.ok(CollectionModel.of(allByStudentsID, link));
     }
 
     @PostMapping()
@@ -72,4 +80,19 @@ public class ProjectsController {
         return ResponseEntity.noContent().build();
     }
 
+    private Link getLinkToProject(Project project) {
+        addLinksToTasks(project);
+        addLinksToStudents(project);
+        return linkTo(ProjectsController.class).slash(project.getID()).withSelfRel();
+    }
+
+    private void addLinksToTasks(Project project) {
+        project.getTasks().forEach(task -> task.addIf(!task.hasLinks(),
+                () -> linkTo(TasksController.class).slash(task.getID()).withSelfRel()));
+    }
+
+    private void addLinksToStudents(Project project) {
+        project.getStudents().forEach(student -> student.addIf(!student.hasLinks(),
+                () -> linkTo(StudentsController.class).slash(student.getID()).withSelfRel()));
+    }
 }
