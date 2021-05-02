@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 @RestController
-@RequestMapping("/api/project")
+@RequestMapping("/api/projects")
 @CrossOrigin
 public class ProjectsController {
     private final ProjectsService projectsService;

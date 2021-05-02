@@ -1,17 +1,23 @@
 package com.project.controllers.api;
 
+import com.project.model.Student;
 import com.project.model.Task;
 import com.project.services.TasksService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping("/api/task")
+@RequestMapping("/api/tasks")
 @CrossOrigin
 public class TasksController {
     private final TasksService tasksService;

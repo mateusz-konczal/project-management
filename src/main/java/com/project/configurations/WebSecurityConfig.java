@@ -39,11 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/signup/**").permitAll()
                 // TODO For testing purposes
                 .antMatchers(
-                        "/api/project/**",
-                        "/api/task/**",
-                        "/api/user/**",
-                        "/api/student/**",
-                        "/api/lecturer/**").permitAll()
+                        "/api/projects/**",
+                        "/api/tasks/**",
+                        "/api/users/**",
+                        "/api/students/**",
+                        "/api/lecturers/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll()
