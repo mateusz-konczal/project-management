@@ -3,12 +3,16 @@ package com.project.controllers.api;
 import com.project.model.ChatMessage;
 import com.project.services.ChatMessagesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/api/chat-messages")
@@ -23,32 +27,55 @@ public class ChatMessagesController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ChatMessage>> findAllChatMessages() {
+    public ResponseEntity<CollectionModel<ChatMessage>> findAllChatMessages() {
         List<ChatMessage> allChatMessages = chatMessagesService.findAll();
-        return new ResponseEntity<>(allChatMessages, HttpStatus.OK);
+        allChatMessages.forEach(chatMessage -> chatMessage.addIf(!chatMessage.hasLinks(),
+                () -> getLinkToChatMessage(chatMessage)));
+        Link link = linkTo(ChatMessagesController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allChatMessages, link));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ChatMessage> findById(@PathVariable("id") long id) {
-        Optional<ChatMessage> chatMessage = chatMessagesService.findById(id);
-
-        if (chatMessage.isPresent()) {
-            return new ResponseEntity<>(chatMessage.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<ChatMessage> optionalChatMessage = chatMessagesService.findById(id);
+        return optionalChatMessage.map(chatMessage -> {
+            chatMessage.add(getLinkToChatMessage(chatMessage));
+            return new ResponseEntity<>(chatMessage, HttpStatus.OK);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/allByProject/{projectID}")
-    public ResponseEntity<List<ChatMessage>> findAllByProjectID(@PathVariable("projectID") long projectID) {
+    public ResponseEntity<CollectionModel<ChatMessage>> findAllByProjectID(@PathVariable("projectID") long projectID) {
         List<ChatMessage> allByProjectID = chatMessagesService.findAllByProjectID(projectID);
-        return new ResponseEntity<>(allByProjectID, HttpStatus.OK);
+        allByProjectID.forEach(chatMessage -> chatMessage.addIf(!chatMessage.hasLinks(),
+                () -> getLinkToChatMessage(chatMessage)));
+        Link link = linkTo(ChatMessagesController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allByProjectID, link));
     }
 
     @GetMapping("/allByUser/{userID}")
-    public ResponseEntity<List<ChatMessage>> findAllByUserID(@PathVariable("userID") long userID) {
+    public ResponseEntity<CollectionModel<ChatMessage>> findAllByUserID(@PathVariable("userID") long userID) {
         List<ChatMessage> allByUserID = chatMessagesService.findAllByUserID(userID);
-        return new ResponseEntity<>(allByUserID, HttpStatus.OK);
+        allByUserID.forEach(chatMessage -> chatMessage.addIf(!chatMessage.hasLinks(),
+                () -> getLinkToChatMessage(chatMessage)));
+        Link link = linkTo(ChatMessagesController.class).withSelfRel();
+        return ResponseEntity.ok(CollectionModel.of(allByUserID, link));
+    }
+
+    private Link getLinkToChatMessage(ChatMessage chatMessage) {
+        addLinkToProject(chatMessage);
+        addLinkToUser(chatMessage);
+        return linkTo(ChatMessagesController.class).slash(chatMessage.getID()).withSelfRel();
+    }
+
+    private void addLinkToProject(ChatMessage chatMessage) {
+        chatMessage.getProject().addIf(!chatMessage.getProject().hasLinks(),
+                () -> linkTo(ProjectsController.class).slash(chatMessage.getProject().getID()).withSelfRel());
+    }
+
+    private void addLinkToUser(ChatMessage chatMessage) {
+        chatMessage.getUser().addIf(!chatMessage.getUser().hasLinks(),
+                () -> linkTo(UsersController.class).slash(chatMessage.getUser().getID()).withSelfRel());
     }
 
 }
