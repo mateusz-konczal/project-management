@@ -1,0 +1,47 @@
+package com.project.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "messages")
+public class ChatMessage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    @Size(min = 1, max = 1000)
+    private String message;
+
+    @NotNull
+    private LocalDateTime localDateTime;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnoreProperties({"tasks", "students"})
+    private Project project;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
+
+    public ChatMessage(@NotNull @Size(min = 1, max = 1000) String message, @NotNull LocalDateTime localDateTime) {
+        this.message = message;
+        this.localDateTime = localDateTime;
+    }
+}
