@@ -1,17 +1,17 @@
 package com.project.services;
 
-import com.project.model.Project;
-import com.project.model.Student;
-import com.project.model.Task;
-import com.project.model.TaskStatus;
+import com.project.model.*;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -22,15 +22,19 @@ public class InitService {
     private final ProjectsService projectsService;
     private final TasksService tasksService;
     private final StudentsService studentsService;
+    private final ChatMessagesService chatMessagesService;
 
     @Autowired
-    public InitService(ProjectsService projectsService, TasksService tasksService, StudentsService studentsService) {
+    public InitService(ProjectsService projectsService, TasksService tasksService,
+                       StudentsService studentsService, ChatMessagesService chatMessagesService) {
         this.projectsService = projectsService;
         this.tasksService = tasksService;
         this.studentsService = studentsService;
+        this.chatMessagesService = chatMessagesService;
     }
 
     @PostConstruct
+    @Transactional
     public void initData() {
         log.info("Starting initializing data...");
 
@@ -42,6 +46,11 @@ public class InitService {
 
         final int MIN_TASKS_IN_PROJECT = 5;
         final int MAX_TASKS_IN_PROJECT = 10;
+
+        final int MIN_CHAT_MESSAGES_IN_PROJECT = 6;
+        final int MAX_CHAT_MESSAGES_IN_PROJECT = 10;
+
+        final int CHAT_MESSAGE_MINUS_DAYS = 14;
 
         Lorem lorem = LoremIpsum.getInstance();
 
@@ -92,8 +101,34 @@ public class InitService {
                 t.setProject(project);
                 tasksService.create(t);
             }
+
+            int chatMessagesInProject = ThreadLocalRandom.current()
+                    .nextInt(MIN_CHAT_MESSAGES_IN_PROJECT, MAX_CHAT_MESSAGES_IN_PROJECT + 1);
+
+            LocalDateTime chatMessageLocalDateTime = LocalDateTime.now().minusDays(CHAT_MESSAGE_MINUS_DAYS);
+            LocalDateTime maxLocalDateTime = LocalDateTime.now();
+            long minutesIncrementMax = chatMessageLocalDateTime.until(maxLocalDateTime, ChronoUnit.MINUTES) / chatMessagesInProject;
+
+            for (int k = 0; k < chatMessagesInProject; k++) {
+                String message = lorem.getWords(10, 20);
+
+                long minutesIncrement = ThreadLocalRandom.current().nextLong(minutesIncrementMax / 2, minutesIncrementMax);
+                chatMessageLocalDateTime = chatMessageLocalDateTime.plusMinutes(minutesIncrement);
+
+                ChatMessage chatMessage = new ChatMessage(message, chatMessageLocalDateTime);
+                chatMessage.setProject(project);
+                chatMessage.setUser(getRandomSetElement(studentsInProjectSet));
+                chatMessagesService.create(chatMessage);
+            }
+
         }
 
         log.info("Finished initializing data");
+    }
+
+    static <E> E getRandomSetElement(Set<E> set) {
+        return set.stream()
+                .skip(new Random().nextInt(set.size()))
+                .findFirst().orElse(null);
     }
 }

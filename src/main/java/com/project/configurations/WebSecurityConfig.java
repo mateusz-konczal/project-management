@@ -43,7 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/tasks/**",
                         "/api/users/**",
                         "/api/students/**",
-                        "/api/lecturers/**").permitAll()
+                        "/api/lecturers/**",
+                        "/api/chat-messages/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll()
