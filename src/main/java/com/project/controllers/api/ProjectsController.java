@@ -87,12 +87,16 @@ public class ProjectsController {
     }
 
     private void addLinksToTasks(Project project) {
-        project.getTasks().forEach(task -> task.addIf(!task.hasLinks(),
-                () -> linkTo(TasksController.class).slash(task.getID()).withSelfRel()));
+        if (project.getTasks() != null) {
+            project.getTasks().forEach(task -> task.addIf(!task.hasLinks(),
+                    () -> linkTo(TasksController.class).slash(task.getID()).withSelfRel()));
+        }
     }
 
     private void addLinksToStudents(Project project) {
-        project.getStudents().forEach(student -> student.addIf(!student.hasLinks(),
-                () -> linkTo(StudentsController.class).slash(student.getID()).withSelfRel()));
+        if (project.getStudents() != null) {
+            project.getStudents().forEach(student -> student.addIf(!student.hasLinks(),
+                    () -> linkTo(StudentsController.class).slash(student.getID()).withSelfRel()));
+        }
     }
 }

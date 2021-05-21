@@ -69,13 +69,16 @@ public class ChatMessagesController {
     }
 
     private void addLinkToProject(ChatMessage chatMessage) {
-        chatMessage.getProject().addIf(!chatMessage.getProject().hasLinks(),
-                () -> linkTo(ProjectsController.class).slash(chatMessage.getProject().getID()).withSelfRel());
+        if (chatMessage.getProject() != null) {
+            chatMessage.getProject().addIf(!chatMessage.getProject().hasLinks(),
+                    () -> linkTo(ProjectsController.class).slash(chatMessage.getProject().getID()).withSelfRel());
+        }
     }
 
     private void addLinkToUser(ChatMessage chatMessage) {
-        chatMessage.getUser().addIf(!chatMessage.getUser().hasLinks(),
-                () -> linkTo(UsersController.class).slash(chatMessage.getUser().getID()).withSelfRel());
+        if (chatMessage.getUser() != null) {
+            chatMessage.getUser().addIf(!chatMessage.getUser().hasLinks(),
+                    () -> linkTo(UsersController.class).slash(chatMessage.getUser().getID()).withSelfRel());
+        }
     }
-
 }
