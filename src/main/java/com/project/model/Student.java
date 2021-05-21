@@ -28,6 +28,12 @@ public class Student extends User {
         this.indexNumber = indexNumber;
         this.fullTime = fullTime;
     }
+
+    public Student(String username, String password, String lastName, String firstName, String email, String indexNumber, Boolean fullTime) {
+        super(username, password, UserRole.STUDENT, lastName, firstName, email);
+        this.indexNumber = indexNumber;
+        this.fullTime = fullTime;
+    }
 }
 
 

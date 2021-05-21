@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,10 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(TasksController.class)
-@AutoConfigureMockMvc
 class TasksControllerTest {
 
-    private static final String TASK_API_URL = "/api/task";
+    private static final String TASK_API_URL = "/api/tasks";
 
     @Autowired
     private MockMvc mockMvc;
@@ -85,10 +82,10 @@ class TasksControllerTest {
 
         Mockito.when(tasksService.findAll()).thenReturn(tasks);
 
-        ResultActions resultActions = mockMvc.perform(get(TASK_API_URL + "/all")
+        ResultActions resultActions = mockMvc.perform(get(TASK_API_URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(tasks.size())));
+                .andExpect(jsonPath("$._embedded.taskList", hasSize(tasks.size())));
 
         checkTasksJSONPath(resultActions, tasks);
     }
@@ -110,7 +107,7 @@ class TasksControllerTest {
         ResultActions resultActions = mockMvc.perform(get(TASK_API_URL + "/allByProject/{id}", projectID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(tasks.size())));
+                .andExpect(jsonPath("$._embedded.taskList", hasSize(tasks.size())));
 
         checkTasksJSONPath(resultActions, tasks);
         checkProjectInTasksJSONPath(resultActions, tasks);
@@ -158,7 +155,7 @@ class TasksControllerTest {
                 .andExpect(jsonPath("$").doesNotExist());
     }
 
-    void checkTaskJSONPath(ResultActions resultActions, Task task) throws Exception {
+    private void checkTaskJSONPath(ResultActions resultActions, Task task) throws Exception {
         resultActions
                 .andExpect(jsonPath("$.name", is(task.getName())))
                 .andExpect(jsonPath("$.sequence", is(task.getSequence())))
@@ -167,27 +164,26 @@ class TasksControllerTest {
 
     }
 
-    void checkTasksJSONPath(ResultActions resultActions, List<Task> tasks) throws Exception {
+    private void checkTasksJSONPath(ResultActions resultActions, List<Task> tasks) throws Exception {
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
-            String jsonIndexPath = "[" + i + "]";
+            String jsonIndexPath = "$._embedded.taskList[" + i + "]";
 
             resultActions
-                    .andExpect(jsonPath("$" + jsonIndexPath + ".name", is(task.getName())))
-                    .andExpect(jsonPath("$" + jsonIndexPath + ".sequence", is(task.getSequence())))
-                    .andExpect(jsonPath("$" + jsonIndexPath + ".description", is(task.getDescription())))
-                    .andExpect(jsonPath("$" + jsonIndexPath + ".taskStatus", is(task.getTaskStatus().toString())));
+                    .andExpect(jsonPath(jsonIndexPath + ".name", is(task.getName())))
+                    .andExpect(jsonPath(jsonIndexPath + ".sequence", is(task.getSequence())))
+                    .andExpect(jsonPath(jsonIndexPath + ".description", is(task.getDescription())))
+                    .andExpect(jsonPath(jsonIndexPath + ".taskStatus", is(task.getTaskStatus().toString())));
         }
     }
 
     private void checkProjectInTasksJSONPath(ResultActions resultActions, List<Task> tasks) throws Exception {
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
-            String jsonIndexPath = "[" + i + "]";
+            String jsonIndexPath = "$._embedded.taskList[" + i + "]";
 
             resultActions
-                    .andExpect(jsonPath("$" + jsonIndexPath + ".project.id", is(task.getProject().getID().intValue())));
+                    .andExpect(jsonPath(jsonIndexPath + ".project.id", is(task.getProject().getID().intValue())));
         }
     }
-
 }
