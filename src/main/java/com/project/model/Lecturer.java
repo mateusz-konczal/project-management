@@ -18,4 +18,14 @@ import javax.persistence.Table;
 public class Lecturer extends User {
     @Column(name = "academic_title", nullable = false)
     private String academicTitle;
+
+    public Lecturer(Long ID, String username, String password, String lastName, String firstName, String email, String academicTitle) {
+        super(ID, username, password, UserRole.LECTURER, lastName, firstName, email);
+        this.academicTitle = academicTitle;
+    }
+
+    public Lecturer(String username, String password, String lastName, String firstName, String email, String academicTitle) {
+        super(username, password, UserRole.LECTURER, lastName, firstName, email);
+        this.academicTitle = academicTitle;
+    }
 }

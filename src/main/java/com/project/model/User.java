@@ -54,6 +54,15 @@ public class User extends RepresentationModel<User> implements UserDetails {
         this.email = email;
     }
 
+    public User(String username, String password, UserRole userRole, String lastName, String firstName, String email) {
+        this.username = username;
+        this.password = password;
+        this.userRole = userRole;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.email = email;
+    }
+
     @Override
     public final Collection<? extends GrantedAuthority> getAuthorities() {
         return userRole.getAuthorities();
