@@ -97,7 +97,7 @@ public class InitService {
                 String taskDescription = lorem.getWords(10, 20);
                 TaskStatus taskStatus = TaskStatus.values()[ThreadLocalRandom.current().nextInt(TaskStatus.values().length)];
 
-                Task t = new Task(taskName, k + 1, taskDescription, taskStatus);
+                Task t = new Task(taskName, taskDescription, taskStatus);
                 t.setProject(project);
                 tasksService.create(t);
             }

@@ -50,7 +50,7 @@ class TasksControllerTest {
     @Test
     void findByIdShouldReturnTask() throws Exception {
         long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task task = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
 
         Mockito.when(tasksService.findById(taskID)).thenReturn(Optional.of(task));
@@ -76,8 +76,8 @@ class TasksControllerTest {
 
     @Test
     void findAllShouldReturnTasks() throws Exception {
-        Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
-        Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
+        Task t1 = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task t2 = new Task("Task 2", "Description for task 2", TaskStatus.TO_DO);
         List<Task> tasks = Arrays.asList(t1, t2);
 
         Mockito.when(tasksService.findAll()).thenReturn(tasks);
@@ -96,9 +96,9 @@ class TasksControllerTest {
         Project project = new Project("Project 1", "Description for project 1", LocalDate.now().plusDays(15));
         project.setID(projectID);
 
-        Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task t1 = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         t1.setProject(project);
-        Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
+        Task t2 = new Task("Task 2", "Description for task 2", TaskStatus.TO_DO);
         t2.setProject(project);
         List<Task> tasks = Arrays.asList(t1, t2);
 
@@ -116,7 +116,7 @@ class TasksControllerTest {
     @Test
     void createShouldReturnTask() throws Exception {
         long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task task = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
 
         Mockito.when(tasksService.create(any(Task.class))).thenReturn(task);
@@ -132,7 +132,7 @@ class TasksControllerTest {
     @Test
     void updateShouldReturnTask() throws Exception {
         long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task task = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
 
         Mockito.when(tasksService.update(any(Task.class))).thenReturn(task);
@@ -158,7 +158,6 @@ class TasksControllerTest {
     private void checkTaskJSONPath(ResultActions resultActions, Task task) throws Exception {
         resultActions
                 .andExpect(jsonPath("$.name", is(task.getName())))
-                .andExpect(jsonPath("$.sequence", is(task.getSequence())))
                 .andExpect(jsonPath("$.description", is(task.getDescription())))
                 .andExpect(jsonPath("$.taskStatus", is(task.getTaskStatus().toString())));
 
@@ -171,7 +170,6 @@ class TasksControllerTest {
 
             resultActions
                     .andExpect(jsonPath(jsonIndexPath + ".name", is(task.getName())))
-                    .andExpect(jsonPath(jsonIndexPath + ".sequence", is(task.getSequence())))
                     .andExpect(jsonPath(jsonIndexPath + ".description", is(task.getDescription())))
                     .andExpect(jsonPath(jsonIndexPath + ".taskStatus", is(task.getTaskStatus().toString())));
         }
