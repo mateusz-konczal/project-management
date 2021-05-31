@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ChatMessagesController.class)
-class ChatMessagesControllerTest {
+class ChatMessagesControllerTestIT {
 
     private static final String CHAT_MESSAGE_API_URL = "/api/chat-messages";
 
