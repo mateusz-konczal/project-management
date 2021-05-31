@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(UsersController.class)
-class UsersControllerTest {
+class UsersControllerTestIT {
 
     private static final String USER_API_URL = "/api/users";
 

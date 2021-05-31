@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(TasksController.class)
-class TasksControllerTest {
+class TasksControllerTestIT {
 
     private static final String TASK_API_URL = "/api/tasks";
 

@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(StudentsController.class)
-class StudentsControllerTest {
+class StudentsControllerTestIT {
 
     private static final String STUDENT_API_URL = "/api/students";
 
