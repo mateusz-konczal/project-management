@@ -1,189 +1,133 @@
 package com.project.controllers.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.model.Project;
 import com.project.model.Task;
 import com.project.model.TaskStatus;
 import com.project.services.TasksService;
-import com.project.services.UsersService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(TasksController.class)
-class TasksControllerTest {
+@ExtendWith(MockitoExtension.class)
+public class TasksControllerTest {
 
-    private static final String TASK_API_URL = "/api/tasks";
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
+    @Mock
     private TasksService tasksService;
 
-    @MockBean
-    private UsersService usersService;
+    @InjectMocks
+    private TasksController tasksController;
 
     @Test
-    void findByIdShouldReturnTask() throws Exception {
-        long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
-        task.setID(taskID);
-
-        Mockito.when(tasksService.findById(taskID)).thenReturn(Optional.of(task));
-
-        ResultActions resultActions = mockMvc.perform(get(TASK_API_URL + "/{id}", task.getID())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int) taskID)));
-
-        checkTaskJSONPath(resultActions, task);
-    }
-
-    @Test
-    void findByIdShouldReturnNotFound() throws Exception {
-        long projectID = 1L;
-        Mockito.when(tasksService.findById(projectID)).thenReturn(Optional.empty());
-
-        mockMvc.perform(get(TASK_API_URL + "/{id}", projectID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$").doesNotExist());
-    }
-
-    @Test
-    void findAllShouldReturnTasks() throws Exception {
+    void findAllShouldReturnTasks() {
         Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
         Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
         List<Task> tasks = Arrays.asList(t1, t2);
+        when(tasksService.findAll()).thenReturn(tasks);
 
-        Mockito.when(tasksService.findAll()).thenReturn(tasks);
+        ResponseEntity<CollectionModel<Task>> responseEntity = tasksController.findAllTasks();
 
-        ResultActions resultActions = mockMvc.perform(get(TASK_API_URL)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.taskList", hasSize(tasks.size())));
-
-        checkTasksJSONPath(resultActions, tasks);
+        assertNotNull(responseEntity.getBody());
+        Collection<Task> taskCollection = responseEntity.getBody().getContent();
+        assertNotNull(taskCollection);
+        assertThat(taskCollection, hasSize(2));
+        assertAll(() -> assertTrue(taskCollection.contains(tasks.get(0))),
+                () -> assertTrue(taskCollection.contains(tasks.get(1))));
     }
 
     @Test
-    void findAllByProjectIDShouldReturnTasks() throws Exception {
+    void findByIdShouldReturnTask() {
+        long taskID = 1L;
+        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        task.setID(taskID);
+        when(tasksService.findById(taskID)).thenReturn(Optional.of(task));
+
+        ResponseEntity<Task> responseEntity = tasksController.findById(task.getID());
+
+        assertAll(() -> assertThat(responseEntity.getStatusCodeValue(), is(HttpStatus.OK.value())),
+                () -> assertThat(responseEntity.getBody(), is(task)));
+    }
+
+    @Test
+    void findByIdShouldReturnNotFound() {
+        long taskID = 1L;
+        when(tasksService.findById(taskID)).thenReturn(Optional.empty());
+
+        ResponseEntity<Task> responseEntity = tasksController.findById(taskID);
+
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void findAllByProjectIDShouldReturnTasks() {
         Long projectID = 1L;
         Project project = new Project("Project 1", "Description for project 1", LocalDate.now().plusDays(15));
         project.setID(projectID);
-
         Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
-        t1.setProject(project);
         Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
-        t2.setProject(project);
         List<Task> tasks = Arrays.asList(t1, t2);
+        project.setTasks(tasks);
+        when(tasksService.findAllByProjectID(projectID)).thenReturn(tasks);
 
-        Mockito.when(tasksService.findAllByProjectID(projectID)).thenReturn(tasks);
+        ResponseEntity<CollectionModel<Task>> responseEntity = tasksController.findAllByProjectID(project.getID());
 
-        ResultActions resultActions = mockMvc.perform(get(TASK_API_URL + "/allByProject/{id}", projectID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.taskList", hasSize(tasks.size())));
-
-        checkTasksJSONPath(resultActions, tasks);
-        checkProjectInTasksJSONPath(resultActions, tasks);
+        assertNotNull(responseEntity.getBody());
+        Collection<Task> taskCollection = responseEntity.getBody().getContent();
+        assertNotNull(taskCollection);
+        assertAll(() -> assertThat(taskCollection, hasSize(2)),
+                () -> assertThat(taskCollection).hasSameElementsAs(project.getTasks()));
     }
 
     @Test
-    void createShouldReturnTask() throws Exception {
+    void createShouldReturnTask() {
         long taskID = 1L;
         Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
+        when(tasksService.create(any(Task.class))).thenReturn(task);
 
-        Mockito.when(tasksService.create(any(Task.class))).thenReturn(task);
+        ResponseEntity<Task> responseEntity = tasksController.create(task);
 
-        ResultActions resultActions = mockMvc.perform(post(TASK_API_URL)
-                .content(objectMapper.writeValueAsString(task))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-
-        checkTaskJSONPath(resultActions, task);
+        assertAll(() -> assertThat(responseEntity.getStatusCodeValue(), is(HttpStatus.CREATED.value())),
+                () -> assertThat(responseEntity.getBody(), is(task)));
     }
 
     @Test
-    void updateShouldReturnTask() throws Exception {
+    void updateShouldReturnTask() {
         long taskID = 1L;
         Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
+        when(tasksService.update(any(Task.class))).thenReturn(task);
 
-        Mockito.when(tasksService.update(any(Task.class))).thenReturn(task);
+        ResponseEntity<Task> responseEntity = tasksController.update(task);
 
-        ResultActions resultActions = mockMvc.perform(put(TASK_API_URL)
-                .content(objectMapper.writeValueAsString(task))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        checkTaskJSONPath(resultActions, task);
+        assertAll(() -> assertThat(responseEntity.getStatusCodeValue(), is(HttpStatus.OK.value())),
+                () -> assertThat(responseEntity.getBody(), is(task)));
     }
 
     @Test
-    void deleteByIdShouldReturnNoContent() throws Exception {
+    void deleteByIdShouldReturnNoContent() {
         long taskID = 1L;
 
-        mockMvc.perform(delete(TASK_API_URL + "/{id}", taskID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$").doesNotExist());
-    }
+        ResponseEntity<Void> responseEntity = tasksController.deleteById(taskID);
 
-    private void checkTaskJSONPath(ResultActions resultActions, Task task) throws Exception {
-        resultActions
-                .andExpect(jsonPath("$.name", is(task.getName())))
-                .andExpect(jsonPath("$.sequence", is(task.getSequence())))
-                .andExpect(jsonPath("$.description", is(task.getDescription())))
-                .andExpect(jsonPath("$.taskStatus", is(task.getTaskStatus().toString())));
-
-    }
-
-    private void checkTasksJSONPath(ResultActions resultActions, List<Task> tasks) throws Exception {
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            String jsonIndexPath = "$._embedded.taskList[" + i + "]";
-
-            resultActions
-                    .andExpect(jsonPath(jsonIndexPath + ".name", is(task.getName())))
-                    .andExpect(jsonPath(jsonIndexPath + ".sequence", is(task.getSequence())))
-                    .andExpect(jsonPath(jsonIndexPath + ".description", is(task.getDescription())))
-                    .andExpect(jsonPath(jsonIndexPath + ".taskStatus", is(task.getTaskStatus().toString())));
-        }
-    }
-
-    private void checkProjectInTasksJSONPath(ResultActions resultActions, List<Task> tasks) throws Exception {
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            String jsonIndexPath = "$._embedded.taskList[" + i + "]";
-
-            resultActions
-                    .andExpect(jsonPath(jsonIndexPath + ".project.id", is(task.getProject().getID().intValue())));
-        }
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

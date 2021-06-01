@@ -1,124 +1,110 @@
 package com.project.controllers.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.model.Lecturer;
 import com.project.services.LecturersService;
-import com.project.services.UsersService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(LecturersController.class)
-class LecturersControllerTest {
+@ExtendWith(MockitoExtension.class)
+public class LecturersControllerTest {
 
-    private static final String LECTURER_API_URL = "/api/lecturers";
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
+    @Mock
     private LecturersService lecturersService;
 
-    @MockBean
-    private UsersService usersService;
+    @InjectMocks
+    private LecturersController lecturersController;
 
     @Test
-    void findAllLecturersShouldReturnLecturers() throws Exception {
+    void findAllLecturersShouldReturnLecturers() {
         Lecturer lecturer1 = new Lecturer(1L, "adam_wojciechowski", "password1@", "Wojciechowski", "Adam", "adamwojciechowski@example.com", "doktor habilitowany");
         Lecturer lecturer2 = new Lecturer(1L, "justyna_grzybowska", "password!9#", "Grzybowska", "Justyna", "justynagrzybowska@example.com", "profesor nadzwyczajny");
         List<Lecturer> lecturers = Arrays.asList(lecturer1, lecturer2);
+        when(lecturersService.findAll()).thenReturn(lecturers);
 
-        Mockito.when(lecturersService.findAll()).thenReturn(lecturers);
+        ResponseEntity<CollectionModel<Lecturer>> responseEntity = lecturersController.findAllLecturers();
 
-        ResultActions resultActions = mockMvc.perform(get(LECTURER_API_URL)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.lecturerList", hasSize(lecturers.size())));
-
-        checkLecturersJSONPath(resultActions, lecturers);
+        assertNotNull(responseEntity.getBody());
+        Collection<Lecturer> lecturerCollection = responseEntity.getBody().getContent();
+        assertNotNull(lecturerCollection);
+        assertThat(lecturerCollection, hasSize(2));
+        assertAll(() -> assertTrue(lecturerCollection.contains(lecturers.get(0))),
+                () -> assertTrue(lecturerCollection.contains(lecturers.get(1))));
     }
 
     @Test
-    void findByIdShouldReturnStudent() throws Exception {
+    void findByIdShouldReturnLecturer() {
         long lecturerID = 1L;
         Lecturer lecturer = new Lecturer("adam_wojciechowski", "password1@", "Wojciechowski", "Adam", "adamwojciechowski@example.com", "doktor habilitowany");
         lecturer.setID(lecturerID);
+        when(lecturersService.findById(lecturerID)).thenReturn(Optional.of(lecturer));
 
-        Mockito.when(lecturersService.findById(lecturerID)).thenReturn(Optional.of(lecturer));
+        ResponseEntity<Lecturer> responseEntity = lecturersController.findById(lecturer.getID());
 
-        ResultActions resultActions = mockMvc.perform(get(LECTURER_API_URL + "/{id}", lecturer.getID())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is((int) lecturerID)));
-
-        checkLecturerJSONPath(resultActions, lecturer);
+        assertAll(() -> assertThat(responseEntity.getStatusCodeValue(), is(HttpStatus.OK.value())),
+                () -> assertThat(responseEntity.getBody(), is(lecturer)));
     }
 
     @Test
-    void findByIdShouldReturnNotFound() throws Exception {
+    void findByIdShouldReturnNotFound() {
         long lecturerID = 1L;
-        Mockito.when(lecturersService.findById(lecturerID)).thenReturn(Optional.empty());
+        when(lecturersService.findById(lecturerID)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get(LECTURER_API_URL + "/{id}", lecturerID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$").doesNotExist());
+        ResponseEntity<Lecturer> responseEntity = lecturersController.findById(lecturerID);
+
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
-    void deleteByIdShouldReturnNoContent() throws Exception {
+    void createShouldReturnStudent() {
+        long lecturerID = 1L;
+        Lecturer lecturer = new Lecturer("adam_wojciechowski", "password1@", "Wojciechowski", "Adam", "adamwojciechowski@example.com", "doktor habilitowany");
+        lecturer.setID(lecturerID);
+        when(lecturersService.create(any(Lecturer.class))).thenReturn(lecturer);
+
+        ResponseEntity<Lecturer> responseEntity = lecturersController.create(lecturer);
+
+        assertAll(() -> assertThat(responseEntity.getStatusCodeValue(), is(HttpStatus.CREATED.value())),
+                () -> assertThat(responseEntity.getBody(), is(lecturer)));
+    }
+
+    @Test
+    void updateShouldReturnStudent() {
+        long lecturerID = 1L;
+        Lecturer lecturer = new Lecturer("adam_wojciechowski", "password1@", "Wojciechowski", "Adam", "adamwojciechowski@example.com", "doktor habilitowany");
+        lecturer.setID(lecturerID);
+        when(lecturersService.update(any(Lecturer.class))).thenReturn(lecturer);
+
+        ResponseEntity<Lecturer> responseEntity = lecturersController.update(lecturer);
+
+        assertAll(() -> assertThat(responseEntity.getStatusCodeValue(), is(HttpStatus.OK.value())),
+                () -> assertThat(responseEntity.getBody(), is(lecturer)));
+    }
+
+    @Test
+    void deleteByIdShouldReturnNoContent() {
         long lecturerID = 1L;
 
-        mockMvc.perform(delete(LECTURER_API_URL + "/{id}", lecturerID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$").doesNotExist());
-    }
+        ResponseEntity<Void> responseEntity = lecturersController.deleteById(lecturerID);
 
-    private void checkLecturersJSONPath(ResultActions resultActions, List<Lecturer> lecturers) throws Exception {
-        for (int i = 0; i < lecturers.size(); i++) {
-            Lecturer lecturer = lecturers.get(i);
-            String jsonIndexPath = "$._embedded.lecturerList[" + i + "]";
-
-            resultActions
-                    .andExpect(jsonPath(jsonIndexPath + ".username", is(lecturer.getUsername())))
-                    .andExpect(jsonPath(jsonIndexPath + ".password", is(lecturer.getPassword())))
-                    .andExpect(jsonPath(jsonIndexPath + ".lastName", is(lecturer.getLastName())))
-                    .andExpect(jsonPath(jsonIndexPath + ".firstName", is(lecturer.getFirstName())))
-                    .andExpect(jsonPath(jsonIndexPath + ".email", is(lecturer.getEmail())))
-                    .andExpect(jsonPath(jsonIndexPath + ".academicTitle", is(lecturer.getAcademicTitle())));
-        }
-    }
-
-    private void checkLecturerJSONPath(ResultActions resultActions, Lecturer lecturer) throws Exception {
-        resultActions
-                .andExpect(jsonPath("$.username", is(lecturer.getUsername())))
-                .andExpect(jsonPath("$.password", is(lecturer.getPassword())))
-                .andExpect(jsonPath("$.lastName", is(lecturer.getLastName())))
-                .andExpect(jsonPath("$.firstName", is(lecturer.getFirstName())))
-                .andExpect(jsonPath("$.email", is(lecturer.getEmail())))
-                .andExpect(jsonPath("$.academicTitle", is(lecturer.getAcademicTitle())));
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
