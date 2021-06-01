@@ -65,10 +65,10 @@ class TasksControllerTestIT {
 
     @Test
     void findByIdShouldReturnNotFound() throws Exception {
-        long projectID = 1L;
-        Mockito.when(tasksService.findById(projectID)).thenReturn(Optional.empty());
+        long taskID = 1L;
+        Mockito.when(tasksService.findById(taskID)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get(TASK_API_URL + "/{id}", projectID)
+        mockMvc.perform(get(TASK_API_URL + "/{id}", taskID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").doesNotExist());
