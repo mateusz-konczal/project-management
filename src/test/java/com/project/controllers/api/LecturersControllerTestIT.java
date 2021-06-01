@@ -61,7 +61,7 @@ class LecturersControllerTestIT {
     }
 
     @Test
-    void findByIdShouldReturnStudent() throws Exception {
+    void findByIdShouldReturnLecturer() throws Exception {
         long lecturerID = 1L;
         Lecturer lecturer = new Lecturer("adam_wojciechowski", "password1@", "Wojciechowski", "Adam", "adamwojciechowski@example.com", "doktor habilitowany");
         lecturer.setID(lecturerID);

@@ -5,10 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @ToString(callSuper = true)
@@ -22,6 +20,9 @@ public class Student extends User {
 
     @Column(name = "full_time", nullable = false)
     private Boolean fullTime = Boolean.TRUE;
+
+    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
+    private Set<Project> projects;
 
     public Student(Long ID, String username, String password, String lastName, String firstName, String email, String indexNumber, Boolean fullTime) {
         super(ID, username, password, UserRole.STUDENT, lastName, firstName, email);
