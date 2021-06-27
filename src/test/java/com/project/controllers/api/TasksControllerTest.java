@@ -38,8 +38,8 @@ public class TasksControllerTest {
 
     @Test
     void findAllShouldReturnTasks() {
-        Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
-        Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
+        Task t1 = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task t2 = new Task("Task 2", "Description for task 2", TaskStatus.TO_DO);
         List<Task> tasks = Arrays.asList(t1, t2);
         when(tasksService.findAll()).thenReturn(tasks);
 
@@ -56,7 +56,7 @@ public class TasksControllerTest {
     @Test
     void findByIdShouldReturnTask() {
         long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task task = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
         when(tasksService.findById(taskID)).thenReturn(Optional.of(task));
 
@@ -81,8 +81,8 @@ public class TasksControllerTest {
         Long projectID = 1L;
         Project project = new Project("Project 1", "Description for project 1", LocalDate.now().plusDays(15));
         project.setID(projectID);
-        Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
-        Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
+        Task t1 = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task t2 = new Task("Task 2", "Description for task 2", TaskStatus.TO_DO);
         List<Task> tasks = Arrays.asList(t1, t2);
         project.setTasks(tasks);
         when(tasksService.findAllByProjectID(projectID)).thenReturn(tasks);
@@ -99,7 +99,7 @@ public class TasksControllerTest {
     @Test
     void createShouldReturnTask() {
         long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task task = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
         when(tasksService.create(any(Task.class))).thenReturn(task);
 
@@ -112,7 +112,7 @@ public class TasksControllerTest {
     @Test
     void updateShouldReturnTask() {
         long taskID = 1L;
-        Task task = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task task = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
         task.setID(taskID);
         when(tasksService.update(any(Task.class))).thenReturn(task);
 
