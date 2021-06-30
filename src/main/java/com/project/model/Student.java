@@ -11,7 +11,7 @@ import java.util.Set;
 @Data
 @ToString(callSuper = true)
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"projects"})
 @Entity
 @Table(name = "students", indexes = {@Index(name = "idx_index_number", columnList = "index_number")})
 public class Student extends User {

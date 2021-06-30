@@ -24,8 +24,6 @@ public class Task extends RepresentationModel<Task> {
     @Column(nullable = false, length = 50)
     private String name;
 
-    private Integer sequence;
-
     @Lob
     private String description;
 
@@ -42,9 +40,8 @@ public class Task extends RepresentationModel<Task> {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project project;
 
-    public Task(String name, Integer sequence, String description, TaskStatus taskStatus) {
+    public Task(String name, String description, TaskStatus taskStatus) {
         this.name = name;
-        this.sequence = sequence;
         this.description = description;
         this.taskStatus = taskStatus;
     }

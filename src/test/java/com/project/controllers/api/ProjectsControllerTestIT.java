@@ -96,8 +96,8 @@ class ProjectsControllerTestIT {
         Project project = new Project("Project 1", "Description for project 1", LocalDate.now().plusDays(17));
         project.setID(projectID);
 
-        Task t1 = new Task("Task 1", 1, "Description for task 1", TaskStatus.IN_PROGRESS);
-        Task t2 = new Task("Task 2", 2, "Description for task 2", TaskStatus.TO_DO);
+        Task t1 = new Task("Task 1", "Description for task 1", TaskStatus.IN_PROGRESS);
+        Task t2 = new Task("Task 2", "Description for task 2", TaskStatus.TO_DO);
         project.setTasks(Arrays.asList(t1, t2));
 
         Mockito.when(projectsService.findById(projectID)).thenReturn(Optional.of(project));
@@ -179,7 +179,6 @@ class ProjectsControllerTestIT {
 
             resultActions
                     .andExpect(jsonPath(jsonIndexPath + ".name", is(task.getName())))
-                    .andExpect(jsonPath(jsonIndexPath + ".sequence", is(task.getSequence())))
                     .andExpect(jsonPath(jsonIndexPath + ".description", is(task.getDescription())))
                     .andExpect(jsonPath(jsonIndexPath + ".taskStatus", is(task.getTaskStatus().toString())));
         }

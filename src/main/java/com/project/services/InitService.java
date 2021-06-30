@@ -22,15 +22,18 @@ public class InitService {
     private final ProjectsService projectsService;
     private final TasksService tasksService;
     private final StudentsService studentsService;
+    private final LecturersService lecturersService;
     private final ChatMessagesService chatMessagesService;
 
     @Autowired
     public InitService(ProjectsService projectsService, TasksService tasksService,
-                       StudentsService studentsService, ChatMessagesService chatMessagesService) {
+                       StudentsService studentsService, ChatMessagesService chatMessagesService,
+                       LecturersService lecturersService) {
         this.projectsService = projectsService;
         this.tasksService = tasksService;
         this.studentsService = studentsService;
         this.chatMessagesService = chatMessagesService;
+        this.lecturersService = lecturersService;
     }
 
     @PostConstruct
@@ -54,7 +57,7 @@ public class InitService {
 
         Lorem lorem = LoremIpsum.getInstance();
 
-        Student s1 = new Student(0L, "jsmith", "password", "Smith", "John", "Smith@example.com", "100000", true);
+        Lecturer l1 = new Lecturer(0L, "jsmith", "password", "Smith", "John", "Smith@example.com", "dr");
         Student s2 = new Student(0L, "lbaxter", "password", "Baxter", "Lara", "Baxter@example.com", "100001", true);
         Student s3 = new Student(0L, "atyson", "password", "Tyson", "Alex", "Tyson@example.com", "100002", true);
         Student s4 = new Student(0L, "swright", "password", "Wright", "Sam", "Wright@example.com", "100004", false);
@@ -64,7 +67,8 @@ public class InitService {
         Student s8 = new Student(0L, "oharvey", "password", "Harvey", "Oliver", "Harvey@example.com", "100008", true);
         Student s9 = new Student(0L, "esimson", "password", "Simon", "Emma", "Simon@example.com", "100009", false);
         Student s10 = new Student(0L, "bbourn", "password", "Bourn", "Benjamin", "Bourn@example.com", "100010", true);
-        List<Student> allStudents = studentsService.saveAll(Arrays.asList(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10));
+        List<Student> allStudents = studentsService.saveAll(Arrays.asList(s2, s3, s4, s5, s6, s7, s8, s9, s10));
+        lecturersService.create(l1);
 
         for (int i = 0; i < PROJECT_NUMBER; i++) {
             String name = lorem.getTitle(2, 4);
@@ -97,7 +101,7 @@ public class InitService {
                 String taskDescription = lorem.getWords(10, 20);
                 TaskStatus taskStatus = TaskStatus.values()[ThreadLocalRandom.current().nextInt(TaskStatus.values().length)];
 
-                Task t = new Task(taskName, k + 1, taskDescription, taskStatus);
+                Task t = new Task(taskName, taskDescription, taskStatus);
                 t.setProject(project);
                 tasksService.create(t);
             }

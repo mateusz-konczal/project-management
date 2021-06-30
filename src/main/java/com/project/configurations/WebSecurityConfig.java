@@ -14,8 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -35,10 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(
                         "/css/**",
-                        "/img/**",
-                        "/js/**",
-                        "/vendor/**",
-                        "/signup/**").permitAll()
+                        "/scripts/**",
+                        "/auth/**").permitAll()
                 // TODO For testing purposes
                 .antMatchers(
                         "/api/projects/**",
@@ -46,17 +42,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/users/**",
                         "/api/students/**",
                         "/api/lecturers/**",
-                        "/api/chat-messages/**",
-                        "/ws/**").permitAll()
+                        "/api/chat-messages/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").permitAll()
+                .formLogin().loginPage("/auth/login").permitAll()
                 .and()
                 .logout()
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login?logout").permitAll()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"))
+                .logoutSuccessUrl("/auth/login?logout").permitAll()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler());
