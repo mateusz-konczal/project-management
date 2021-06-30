@@ -35,7 +35,7 @@ public class AuthController {
 
     @GetMapping("/")
     public String getIndex() {
-        return "index";
+        return "redirect:/";
     }
 
     @GetMapping("/login")
@@ -103,7 +103,7 @@ public class AuthController {
         }
 
         lecturersService.create(lecturer);
-        return "redirect:/login";
+        return "redirect:/auth/login";
     }
 
 }

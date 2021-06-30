@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8"/>
     <title>Lista projektów</title>
@@ -9,8 +9,11 @@
     <style>
         body {
             padding-top: 5rem;
+            padding-bottom: 5rem;
         }
     </style>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/scripts/dt/datatables.css}"/>
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -28,6 +31,9 @@
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/students}">Studenci</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/auth/logout}">Wyloguj się</a>
+            </li>
         </ul>
     </div>
 </nav>
@@ -37,12 +43,13 @@
             <h2>
                 Lista projektów
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNewModal"
-                        style="float: right">
+                        style="float: right" sec:authorize="${hasAuthority('ADMIN')}">
                     Dodaj nowy projekt
                 </button>
             </h2>
             <br/>
             <table class="table" id="mainTable">
+                <thead>
                 <tr>
                     <th>Lp.</th>
                     <th>ID</th>
@@ -50,8 +57,10 @@
                     <th>Opis</th>
                     <th>Utworzony</th>
                     <th>Data obrony</th>
-                    <th>Edycja</th>
+                    <th class="actions_column">Akcje</th>
                 </tr>
+                </thead>
+                <tbody>
                 <tr th:each="project : ${projects}">
                     <td th:text="${projectStat.index + 1} + '.'"></td>
                     <td th:text="${project.ID}"></td>
@@ -60,11 +69,12 @@
                     <td th:text="${#temporals.format(project.creationDateTime, 'yyyy-MM-dd hh:mm:ss')}"></td>
                     <td th:text="${#temporals.format(project.deliveryDate, 'yyyy-MM-dd')}"></td>
                     <td>
-                        <a th:href="@{/projects/edit (projectId=${project.ID})}">Edycja</a><br/>
-                        <a th:href="@{/projects/tasks (projectId=${project.ID})}">Zadania</a><br/>
-                        <a th:href="@{/projects/delete (projectId=${project.ID})}">Usuń</a>
+                        <span sec:authorize="${hasAuthority('ADMIN')}"><a th:href="@{/projects/edit (projectId=${project.ID})}">Edycja</a><br/></span>
+                        <a th:href="@{/projects/tasks (projectId=${project.ID})}">Zadania i czat</a><span sec:authorize="${hasAuthority('ADMIN')}"><br/>
+                        <a th:href="@{/projects/delete (projectId=${project.ID})}">Usuń</a></span>
                     </td>
                 </tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -115,5 +125,9 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+<script type="application/javascript"
+        th:src="@{/scripts/dt/datatables.js}"></script>
+<script type="application/javascript"
+        th:src="@{/scripts/datatables.js}"></script>
 </body>
 </html>

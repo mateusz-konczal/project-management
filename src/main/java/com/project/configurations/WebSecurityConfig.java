@@ -33,10 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(
                         "/css/**",
-                        "/img/**",
-                        "/js/**",
-                        "/vendor/**",
-                        "/signup/**").permitAll()
+                        "/scripts/**",
+                        "/auth/**").permitAll()
                 // TODO For testing purposes
                 .antMatchers(
                         "/api/projects/**",
@@ -44,8 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/users/**",
                         "/api/students/**",
                         "/api/lecturers/**",
-                        "/api/chat-messages/**",
-                        "/ws/**").permitAll()
+                        "/api/chat-messages/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/auth/login").permitAll()

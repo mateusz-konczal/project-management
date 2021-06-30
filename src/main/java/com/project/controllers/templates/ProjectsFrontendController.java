@@ -2,6 +2,7 @@ package com.project.controllers.templates;
 
 import com.project.model.Project;
 import com.project.services.ProjectsService;
+import com.project.utils.AllowOnlyLecturer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,7 @@ public class ProjectsFrontendController {
     }
 
     @PostMapping("")
+    @AllowOnlyLecturer
     public String postList(@RequestParam String projectTitle, @RequestParam String projectDescription,
                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate projectDeliveryDate) {
         projectsService.create(new Project(
@@ -38,6 +40,7 @@ public class ProjectsFrontendController {
     }
 
     @GetMapping("/edit")
+    @AllowOnlyLecturer
     public String getEdit(@RequestParam Long projectId, Model model) {
         if (!projectsService.existsById(projectId)) return "redirect:/projects";
 
@@ -46,6 +49,7 @@ public class ProjectsFrontendController {
     }
 
     @PostMapping("/edit")
+    @AllowOnlyLecturer
     public String postEdit(@RequestParam Long projectId, @RequestParam String projectTitle, @RequestParam String projectDescription,
                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate projectDeliveryDate) {
         Project project = projectsService.findById(projectId).get();
@@ -58,6 +62,7 @@ public class ProjectsFrontendController {
     }
 
     @GetMapping("/delete")
+    @AllowOnlyLecturer
     public String getDelete(@RequestParam Long projectId, Model model) {
         if (!projectsService.existsById(projectId)) return "redirect:/projects";
 
@@ -66,6 +71,7 @@ public class ProjectsFrontendController {
     }
 
     @PostMapping("/delete")
+    @AllowOnlyLecturer
     public String postDelete(@RequestParam Long projectId) {
         projectsService.deleteById(projectId);
         return "redirect:/projects";
