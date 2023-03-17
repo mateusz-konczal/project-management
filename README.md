@@ -1,11 +1,24 @@
-# Programowanie zwinne
+# Student Project Management
+The web application manages student projects and assigned tasks. 
+The implementation of the application was divided into back-end and 
+front-end. First, a REST web service was created, and then a front-end based on Thymeleaf.
+- --
+## Technologies
+* Java 8
+* Maven
+* Spring Boot
+* PostgreSQL
+* H2
 
-Projekt wykonywany w ramach laboratoriów z przedmiotu _Programowanie zwinne_
+## Usage
+```
+git clone https://github.com/mateusz-konczal/project-management.git
+cd project-management
+mvn spring-boot:run
+```
 
-## Skład grupy
+* You can access application on [localhost:8080](http://localhost:8080)
+* REST API documentation is available on [localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
 
-- [Gabryszewski, Hubert](mailto:hubgab000@utp.edu.pl)
-- [Icikowski, Piotr](mailto:pioici000@utp.edu.pl)
-- [Kończal, Mateusz](mailto:matkon004@utp.edu.pl)
-- [Olejnik, Maciej](mailto:macole002@utp.edu.pl)
-
+## Demo
+![screenshot](https://github.com/mateusz-konczal/project-management/blob/master/img/img.png?raw=true)
